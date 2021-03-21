@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Default .babylon loading scene</title><link rel="icon" href="data:,">
+    <title>Grain ears opposite</title><link rel="icon" href="data:,">
     <meta charset="UTF-8" />
-    <!-- this link to the preview online version of BJS -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
-	<script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script> 
-    <!-- this is needed for BJS to load scene files -->
+	<script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
     <style>
       html,
@@ -28,72 +26,62 @@
   <body>
     <canvas id="canvas"></canvas>
     <script type="text/javascript">
-		var tx="  _ [draft v03] grain ears opposite \w ost, kr12, Куинджи"
-		var earsE=404;
+	function $(s) {return document.getElementById(s);}
+	
+	var tx="  _ [draft v04] grain ears opposite \w ost, kr12, Куинджи"
+	var earsE=404;
 		
-      var canvas = document.getElementById("canvas");
-      var engine = new BABYLON.Engine(canvas, true);
-	  var sc=null;
-	  var bFirstFrame=true;
-	  var ee=[];
-	  var eeZ=[];
+	var canvas = $("canvas");
+	var engine = new BABYLON.Engine(canvas, true);
+	var sc=null;
+	var bFirstFrame=true;
+	var ee=[];
+	var eeZ=[];
+	var sc=null;
 	  
-	  BABYLON.Animation.AllowMatricesInterpolation = true
-      // doc.babylonjs.com/typedoc/classes/babylon.sceneloader#load
-      BABYLON.SceneLoader.Load("", "sc.babylon", engine, function (scene) {
-      //BABYLON.SceneLoader.Load("", "ear_b02invc.babylon", engine, function (scene) {
-        var camera = new BABYLON.ArcRotateCamera("Camera", 1.3, 1.5, 7, BABYLON.Vector3.Zero(), scene);
+	BABYLON.Animation.AllowMatricesInterpolation = true;
+	BABYLON.SceneLoader.Load("", "sc.babylon", engine, function (scene) {
+		var camera = new BABYLON.ArcRotateCamera("Camera", 1.3, 1.5, 7, BABYLON.Vector3.Zero(), scene);
 		camera.wheelPrecision = 60; 
-		
-		
-        camera.attachControl(canvas, false);
-        scene.clearColor = new BABYLON.Color3(0, 0, 0.2);
-        scene.ambientColor = new BABYLON.Color3.White();
+		camera.attachControl(canvas, false);
+		scene.clearColor = new BABYLON.Color3(0, 0, 0.1);
+		scene.ambientColor = new BABYLON.Color3.White();
 		sc=scene;
-		
-					// Create the 3D UI manager
+					
 		manager = new BABYLON.GUI.GUI3DManager(sc);
 		//panel.margin = 0.75;
 		//manager.addControl(panel);
 		//panel.linkToTransformNode(anchor);
 		//panel.position.z = -2;
 		
-
     BABYLON.SceneLoader.ImportMesh("", "", "pushButton.glb", scene, function (newMeshes) {
         pushButtonCore = newMeshes[0];
         makePushButtons();
         pushButtonCore.setEnabled(false);
     });
 	
-	//Creation of a repeated textured material
-    materialPlane = new BABYLON.StandardMaterial("texturePlane", scene);
-    materialPlane.diffuseTexture = new BABYLON.Texture("Kuindzhi_Ukrainian_night_1876.jpg", scene);
-	//materialPlane.emissiveColor = new BABYLON.Color3(1, 1, 1);
-    materialPlane.alpha = 0.9;
-	//Creation of a plane
-    plane = BABYLON.Mesh.CreatePlane("plane", 4, scene);
-	plane.scaling.x=1.5;
-	plane.rotation.y = Math.PI;
+    picMat = new BABYLON.StandardMaterial("texturePlane", scene);
+    picMat.diffuseTexture = new BABYLON.Texture("Kuindzhi_Ukrainian_night_1876.jpg", scene);
+	//picMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+    picMat.alpha = 0.9;
 	
-	plane.position.z=-5;
-	plane.position.y=0.5
-	plane.position.z=-1.35
+    picPlane = BABYLON.Mesh.CreatePlane("plane", 4, scene);
+	picPlane.scaling.x=1.5;
+	picPlane.rotation.y = Math.PI;
+	picPlane.position.y=0.5
+	picPlane.position.z=-1.35
+	picPlane.material = picMat;
 	
+	//picMat.disableLighting = true;
 	sc.lights[0].range=5
 	//sc.lights[1].intensity=2
 	//sc.lights[1].position.z=14
 	sc.lights[2].range=5
-    
-    plane.material = materialPlane;
-	//plane.disableLighting = true;
-	//materialPlane.disableLighting = true;
 	// var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(-60, 60, 80), scene);
 	
-	
-	//-------------
-	var gl = new BABYLON.GlowLayer("glow", scene);
-
-var makeBeerText = function(text, board, neoncolor){ //TODO multiline BABYLON.GUI.TextBlock https://playground.babylonjs.com/#ZI9AK7#908 
+	//------------- text
+var gl = new BABYLON.GlowLayer("glow", scene);
+var makeText = function(text, board, neoncolor){ //TODO multiline BABYLON.GUI.TextBlock https://playground.babylonjs.com/#ZI9AK7#908 
 	const plane = BABYLON.Mesh.CreatePlane('', 25, scene);
 	plane.material = new BABYLON.StandardMaterial('', scene);
     
@@ -132,16 +120,14 @@ var makeBeerText = function(text, board, neoncolor){ //TODO multiline BABYLON.GU
 	plane.rotation.y = Math.PI;
    return plane;
 }
-
-var beertext = new makeBeerText(tx, false, new BABYLON.Color3(0, 1, 0.38))
-var beertext_Board = new makeBeerText(tx, true, new BABYLON.Color3(0.98, 1, 0))
+var text = new makeText(tx, false, new BABYLON.Color3(0, 1, 0.38))
+var text_Board = new makeText(tx, true, new BABYLON.Color3(0.98, 1, 0))
 
 scene.registerBeforeRender(()=>{
-//beertext_Board.material.emissiveColor.r = (Math.random()*(1+.5))-.5
+//text_Board.material.emissiveColor.r = (Math.random()*(1+.5))-.5; //blink
 })
 	//-------------
 	
-		
 	sc.onPointerObservable.add(function(evt){
         if(evt.pickInfo.hit && evt.pickInfo.pickedMesh && evt.event.button === 0){
             selectedMesh = evt.pickInfo.pickedMesh;
@@ -183,7 +169,6 @@ scene.registerBeforeRender(()=>{
 			}
 		  }
  
-  
 			if(bPlaying)
 			{
 				let animScale=1;
@@ -195,40 +180,32 @@ scene.registerBeforeRender(()=>{
 			}
         });
         window.addEventListener("resize", function () {  engine.resize(); });
-
       });
 
 	var selectedMesh = null;
-	  var currentMesh=null;
-	  var screws=2;
-	  var screwAnim=[];
-	  
-	  var bPlaying=false;
-	  function play()
-	  {
-	  
+	var currentMesh=null;
+	var screws=2;
+	var screwAnim=[];
+
+	var bPlaying=false;
+	function play()
+	{
 		if(bPlaying)
 		{
-		document.getElementById('aud').pause();
-		bPlaying=false;
+			$('aud').pause();
+			bPlaying=false;
 		}
 		else
 		{
-			document.getElementById('aud').play();
+			$('aud').play();
 			bPlaying=true;
 			sc.getSkeletonByName('Armature').beginAnimation("do1", true);
 			animScale_full_t=performance.now()+2000;
 		}
-	  }
+	}
 
 
-function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-  if (typeof stroke === 'undefined') {
-    stroke = true;
-  }
-  if (typeof radius === 'undefined') {
-    radius = 5;
-  }
+function roundRect(ctx, x, y, width, height, radius= 5, fill, stroke= true) {
   if (typeof radius === 'number') {
     radius = {tl: radius, tr: radius, br: radius, bl: radius};
   } else {
@@ -248,13 +225,8 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
   ctx.lineTo(x, y + radius.tl);
   ctx.quadraticCurveTo(x, y, x + radius.tl, y);
   ctx.closePath();
-  if (fill) {
-    ctx.fill();
-  }
-  if (stroke) {
-    ctx.stroke();
-  }
-
+  if (fill)   ctx.fill();
+  if (stroke) ctx.stroke();
 }
 
 var pushButtonCore;
@@ -295,54 +267,36 @@ var manager = null;
     }
 
 var btnPlay=null;
-    function makePushButtons() {
-       var colors = [{r: 0.25, g:0, b:0}, {r: 0, g:0.25, b:0}, {r: 0, g:0, b:0.25},
-                      {r: 0.25, g:0.25, b:0}, {r: 0, g:0.25, b:0.25}, {r: 0.25, g:0, b:0.25}];
+function makePushButtons() {
+   var colors = [{r: 0.25, g:0, b:0}, {r: 0, g:0.25, b:0}, {r: 0, g:0, b:0.25},
+				  {r: 0.25, g:0.25, b:0}, {r: 0, g:0.25, b:0.25}, {r: 0.25, g:0, b:0.25}];
 
-btnPlay = pushButtonCore.clone("pushButton" + index);
-let hoverColor = new BABYLON.Color3(0.2, 1, 0.5);
-makePushButton(btnPlay, hoverColor);
-btnPlay.position = new BABYLON.Vector3(3.3,-0.2, 2.1);
-btnPlay.scaling = new BABYLON.Vector3(0.22,0.22, 0.22);
-/*
-btnPlay.rotation.x=14;
-btnPlay.rotation.y=112;
-btnPlay.rotation.z=221;
-*/
-btnPlay.rotate(new BABYLON.Vector3(0, 1, 0), 3.14);
-
-
-        //panel.blockLayout = true;
-		/*
-        for (var i = 0; i < 1; i++)
-		{
-            newPushButton = pushButtonCore.clone("pushButton" + index);
-            let hoverColor = new BABYLON.Color3(colors[i % 6].r, colors[i % 6].g, colors[i % 6].b);
-            makePushButton(newPushButton, hoverColor);
-        }*/
-        //panel.blockLayout = false;
-
+	btnPlay = pushButtonCore.clone("pushButton" + index);
+	let hoverColor = new BABYLON.Color3(0.2, 1, 0.5);
+	makePushButton(btnPlay, hoverColor);
+	btnPlay.position = new BABYLON.Vector3(3.3,-0.2, 2.1);
+	btnPlay.scaling = new BABYLON.Vector3(0.22,0.22, 0.22);
+	btnPlay.rotate(new BABYLON.Vector3(0, 1, 0), 3.14);
 		
-		p=sc.getMeshByName("Cube").clone();
-		p.position.x+=1;
-		p.rotate(new BABYLON.Vector3(0, 1, 0), 1.14);
-		
-		p1=sc.getMeshByName("Cube").clone();
-		p1.position.x-=1;
-		p1.rotate(new BABYLON.Vector3(0, 1, 0), 2.14);
-		
-		//cap=sc.getMeshByName("Cube.001").clone();
-		//cap.position.y=-1.1
-		//cap.rotate(new BABYLON.Vector3(0, 1, 0), 3.14/2);
-					
-			//sc.getMeshByName("screwR").
-			//Armature
-    }
-	  
-    </script>
+	p=sc.getMeshByName("Cube").clone();
+	p.position.x+=1;
+	p.rotate(new BABYLON.Vector3(0, 1, 0), 1.14);
 	
+	p1=sc.getMeshByName("Cube").clone();
+	p1.position.x-=1;
+	p1.rotate(new BABYLON.Vector3(0, 1, 0), 2.14);
+	
+	//cap=sc.getMeshByName("Cube.001").clone();
+	//cap.position.y=-1.1
+	//cap.rotate(new BABYLON.Vector3(0, 1, 0), 3.14/2);
+				
+		//sc.getMeshByName("screwR").
+		//Armature
+}
+</script>
+
 <audio id="aud">
-    <source src="2021-03-20ua.opus" >
+	<source src="2021-03-20ua.opus" >
 </audio>
   </body>
 </html>
