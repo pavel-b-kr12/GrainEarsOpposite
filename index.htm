@@ -38,6 +38,19 @@
 	var ee=[];
 	var eeZ=[];
 	var sc=null;
+
+	var anims=[];
+	function anims_push(f, start_t=0, end_t)
+	{
+		var anim={}
+		anim.run=f;
+		anim.start_t=start_t;
+		if(end_t) anim.end_t=end_t;
+
+		anims.push(anim);	//console.log(anim, anim.run.end_t, anims)
+
+	}
+
 	  
 	BABYLON.Animation.AllowMatricesInterpolation = true;
 	BABYLON.SceneLoader.Load("", "sc.babylon", engine, function (scene) {
@@ -59,6 +72,7 @@
         makePushButtons();
         pushButtonCore.setEnabled(false);
     });
+
 	
     picMat = new BABYLON.StandardMaterial("texturePlane", scene);
     picMat.diffuseTexture = new BABYLON.Texture("Kuindzhi_Ukrainian_night_1876.jpg", scene);
@@ -71,6 +85,7 @@
 	picPlane.position.y=0.5
 	picPlane.position.z=-1.35
 	picPlane.material = picMat;
+
 	
 	//picMat.disableLighting = true;
 	sc.lights[0].range=5
@@ -78,10 +93,162 @@
 	//sc.lights[1].position.z=14
 	sc.lights[2].range=5
 	// var light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(-60, 60, 80), scene);
+
+//--------------front window glass
+	picMat2 = new BABYLON.StandardMaterial("texturePlane", scene);
+	picMat2.diffuseTexture = new BABYLON.Texture("glass_inv.jpg", scene);
+	//picMat2.diffuseTexture = new BABYLON.Texture("glass_inv.webp", scene);
+    picMat2.alpha = 0.1;
+	mesh1 = BABYLON.Mesh.CreatePlane("plane2", 4, scene);
+	mesh1.position = new BABYLON.Vector3(0, 0.8, 1.643);
+	mesh1.material = picMat2;
+	mesh1.scaling.x=1.4;
+	mesh1.scaling.z=0.01;
+	mesh1.rotation.y = Math.PI;
+
+	mesh2 = BABYLON.Mesh.CreatePlane("plane2", 4, scene);
+	mesh2.position = new BABYLON.Vector3(0, 0.8, 1.711);
+	mesh2.material = picMat2;
+	mesh2.scaling.x=1.5;
+	mesh2.scaling.z=0.01;
+	mesh2.rotation.y = Math.PI;
+
+
+
+//--------------
+
+/*
+	    var sphere = BABYLON.Mesh.CreateSphere("sphere", 128, 0.5, scene);
+
+    var pbr = new BABYLON.PBRMaterial("pbr", scene);
+    sphere.material = pbr;
+	sphere.position = new BABYLON.Vector3(2.8, -0.5, -0.3);
+
+    pbr.metallic = 1.0;
+    pbr.roughness = 0.4;    
+    
+    pbr.subSurface.isRefractionEnabled = true;
+    pbr.subSurface.indexOfRefraction = 1.8;
+
+    var a = 0;
+    scene.afterRender = () => {
+        a += 0.01;
+        pbr.subSurface.indexOfRefraction = 1.5 + Math.cos(a) * 0.5;
+    };
+	*/
+
 	
 	//------------- text
 var gl = new BABYLON.GlowLayer("glow", scene);
-var makeText = function(text, board, neoncolor){ //TODO multiline BABYLON.GUI.TextBlock https://playground.babylonjs.com/#ZI9AK7#908 
+var text = new makeText(tx, false, new BABYLON.Color3(0, 1, 0.38), scene)
+var text_Board = new makeText(tx, true, new BABYLON.Color3(0.98, 1, 0), scene)
+
+scene.registerBeforeRender(()=>{
+//text_Board.material.emissiveColor.r = (Math.random()*(1+.5))-.5; //blink
+})
+	//-------------
+	
+	sc.onPointerObservable.add(function(evt){
+        if(evt.pickInfo.hit && evt.pickInfo.pickedMesh && evt.event.button === 0){
+            selectedMesh = evt.pickInfo.pickedMesh;
+			//console.log(selectedMesh, selectedMesh.name)
+			if(selectedMesh.name=="screwR") { screwAnim.push(selectedMesh); selectedMesh.animend=performance.now()+2000;}
+			if(selectedMesh.name=="screwL") { screwAnim.push(selectedMesh); selectedMesh.animend=performance.now()+2000;}
+        }
+    }, BABYLON.PointerEventTypes.POINTERUP);
+		
+		//--------------------------------------
+        engine.runRenderLoop(function () {
+          scene.render();
+		  if(bFirstFrame)
+		  {
+			bFirstFrame=false;
+			for(let i=1;i<earsE;i++)
+			{
+				ee[i]=sc.getMeshByName("ear."+i.toString().padStart(3, "0"));
+				eeZ[i]=ee[i].position.y;
+			}
+		  }
+		  
+		for(let i=0; i<anims.length;i++)
+		{
+			if(anims[i].run()) anims.splice(i,1);
+		}
+		  //sc.animationGroups[0].play(true);
+		  if(screwAnim.length>0) //TODO re to anims 
+		  {
+		    if(performance.now()<screwAnim[0].animend)
+			{
+				screwAnim[0].position.z+=0.01;
+				screwAnim[0].rotate(new BABYLON.Vector3(0, 1, 0), -0.02);
+				//TODO anim screw fall
+			}
+			else
+			{
+				screwAnim[0].visibility=false; 
+				screwAnim.shift();
+				if(screwAnim.length>0) screwAnim[0].animend=performance.now()+1500;
+				screws--;
+				if(screws==0) sc.getMeshByName("case.front").visibility=false;
+			}
+		  }
+ 
+			if(bPlaying)
+			{
+				let animScale=1;
+				if(performance.now()<animScale_full_t)
+					animScale = 1-(animScale_full_t-performance.now())/2000;
+
+			  for(let i=1;i<earsE;i++)
+				ee[i].position.y=eeZ[i]+Math.sin(performance.now()/2000.+i*i)*0.09*animScale;//0.2
+			}
+        });
+        window.addEventListener("resize", function () {  engine.resize(); });
+      });
+
+	var selectedMesh = null;
+	var currentMesh=null;
+	var screws=2;
+	var screwAnim=[];
+
+	var bPlaying=false;
+	var bwindow=true;
+	function play()
+	{
+		if(bPlaying)
+		{
+			$('aud').pause();
+			bPlaying=false;
+		}
+		else
+		{
+			if(bwindow)
+			{
+				bwindow=false;
+				anims_push(
+					function(){ //f return true after finish
+						if(performance.now()<this.start_t) return false;
+						if(performance.now()>this.end_t) {
+							//mesh1.visibility=false;
+							mesh1.dispose();
+							mesh2.dispose();
+							return true;
+						}
+						mesh1.position.y-=0.01;
+						mesh2.position.y-=0.01;
+					},0, performance.now()+5000
+				)
+			}
+
+			$('aud').play();
+			bPlaying=true;
+			sc.getSkeletonByName('Armature').beginAnimation("do1", true);
+			animScale_full_t=performance.now()+2000;
+		}
+	}
+
+	//-------------- text
+	function makeText(text, board, neoncolor, scene){ //TODO multiline BABYLON.GUI.TextBlock https://playground.babylonjs.com/#ZI9AK7#908 
 	const plane = BABYLON.Mesh.CreatePlane('', 25, scene);
 	plane.material = new BABYLON.StandardMaterial('', scene);
     
@@ -120,91 +287,6 @@ var makeText = function(text, board, neoncolor){ //TODO multiline BABYLON.GUI.Te
 	plane.rotation.y = Math.PI;
    return plane;
 }
-var text = new makeText(tx, false, new BABYLON.Color3(0, 1, 0.38))
-var text_Board = new makeText(tx, true, new BABYLON.Color3(0.98, 1, 0))
-
-scene.registerBeforeRender(()=>{
-//text_Board.material.emissiveColor.r = (Math.random()*(1+.5))-.5; //blink
-})
-	//-------------
-	
-	sc.onPointerObservable.add(function(evt){
-        if(evt.pickInfo.hit && evt.pickInfo.pickedMesh && evt.event.button === 0){
-            selectedMesh = evt.pickInfo.pickedMesh;
-			//console.log(selectedMesh, selectedMesh.name)
-			if(selectedMesh.name=="screwR") { screwAnim.push(selectedMesh); selectedMesh.animend=performance.now()+2000;}
-			if(selectedMesh.name=="screwL") { screwAnim.push(selectedMesh); selectedMesh.animend=performance.now()+2000;}
-        }
-    }, BABYLON.PointerEventTypes.POINTERUP);
-		
-		//--------------------------------------
-        engine.runRenderLoop(function () {
-          scene.render();
-		  if(bFirstFrame)
-		  {
-			bFirstFrame=false;
-			for(let i=1;i<earsE;i++)
-			{
-				ee[i]=sc.getMeshByName("ear."+i.toString().padStart(3, "0"));
-				eeZ[i]=ee[i].position.y;
-			}
-		  }
-		  
-		  //sc.animationGroups[0].play(true);
-		  if(screwAnim.length>0)
-		  {
-		    if(performance.now()<screwAnim[0].animend)
-			{
-				screwAnim[0].position.z+=0.01;
-				screwAnim[0].rotate(new BABYLON.Vector3(0, 1, 0), -0.02);
-				//TODO anim screw fall
-			}
-			else
-			{
-				screwAnim[0].visibility=false; 
-				screwAnim.shift();
-				if(screwAnim.length>0) screwAnim[0].animend=performance.now()+1500;
-				screws--;
-				if(screws==0) sc.getMeshByName("case.front").visibility=false;
-			}
-		  }
- 
-			if(bPlaying)
-			{
-				let animScale=1;
-				if(performance.now()<animScale_full_t)
-					animScale = 1-(animScale_full_t-performance.now())/2000;
-
-			  for(let i=1;i<earsE;i++)
-				ee[i].position.y=eeZ[i]+Math.sin(performance.now()/2000.+i*i)*0.09*animScale;//0.2
-			}
-        });
-        window.addEventListener("resize", function () {  engine.resize(); });
-      });
-
-	var selectedMesh = null;
-	var currentMesh=null;
-	var screws=2;
-	var screwAnim=[];
-
-	var bPlaying=false;
-	function play()
-	{
-		if(bPlaying)
-		{
-			$('aud').pause();
-			bPlaying=false;
-		}
-		else
-		{
-			$('aud').play();
-			bPlaying=true;
-			sc.getSkeletonByName('Armature').beginAnimation("do1", true);
-			animScale_full_t=performance.now()+2000;
-		}
-	}
-
-
 function roundRect(ctx, x, y, width, height, radius= 5, fill, stroke= true) {
   if (typeof radius === 'number') {
     radius = {tl: radius, tr: radius, br: radius, bl: radius};
@@ -228,7 +310,7 @@ function roundRect(ctx, x, y, width, height, radius= 5, fill, stroke= true) {
   if (fill)   ctx.fill();
   if (stroke) ctx.stroke();
 }
-
+//-------------- 
 var pushButtonCore;
 var index = 0; 
 var anchor = new BABYLON.TransformNode("");
