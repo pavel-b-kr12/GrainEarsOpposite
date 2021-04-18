@@ -1,4 +1,4 @@
-![different ants](/scr/1.jpg)
+![](/scr/1.jpg)
 
 Interactive with webGL Babylon.js: <https://pavel-b-kr12.github.io/GrainEarsOpposite/>
 
