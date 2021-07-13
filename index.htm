@@ -3,9 +3,14 @@
   <head>
     <title>Grain ears opposite</title><link rel="icon" href="data:,">
     <meta charset="UTF-8" />
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-	<script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
-    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    <!-- <script src="https://cdn.babylonjs.com/babylon.js"></script> -->
+	<!-- <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script> -->
+	<script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+	<!-- Error: "babylonjs-loaders" -->
+    <!-- <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script> -->
+    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+
     <style>
       html,
       body {
@@ -54,7 +59,9 @@
 	  
 	BABYLON.Animation.AllowMatricesInterpolation = true;
 	BABYLON.SceneLoader.Load("", "sc.babylon", engine, function (scene) {
-		var camera = new BABYLON.ArcRotateCamera("Camera", 1.3, 1.5, 7, BABYLON.Vector3.Zero(), scene);
+		var camera = new BABYLON.ArcRotateCamera("Camera", 1.2, 1.4, 8.2, BABYLON.Vector3(1.1,1.3,2), scene);
+		//TODO animate from
+		//var camera = new BABYLON.ArcRotateCamera("Camera", 1.3, 1.5, 7, BABYLON.Vector3.Zero(), scene);
 		camera.wheelPrecision = 60; 
 		camera.attachControl(canvas, false);
 		scene.clearColor = new BABYLON.Color3(0, 0, 0.1);
@@ -353,8 +360,8 @@ function makePushButtons() {
 	btnPlay = pushButtonCore.clone("pushButton" + index);
 	let hoverColor = new BABYLON.Color3(0.2, 1, 0.5);
 	makePushButton(btnPlay, hoverColor);
-	btnPlay.position = new BABYLON.Vector3(3.3,-0.2, 2.1);
-	btnPlay.scaling = new BABYLON.Vector3(0.22,0.22, 0.22);
+	btnPlay.position = new BABYLON.Vector3(3.3,-0.2, 1.77);
+	btnPlay.scaling = new BABYLON.Vector3(0.33,0.33, 0.33);
 	btnPlay.rotate(new BABYLON.Vector3(0, 1, 0), 3.14);
 		
 	p=sc.getMeshByName("Cube").clone();

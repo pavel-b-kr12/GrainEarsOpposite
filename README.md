@@ -8,5 +8,6 @@ Youtube compressed video: <https://youtu.be/GjTis5OhnUA>
 * make animation for all humans
 * rework ears
 * multiline text
+* в воздухе соловей
 
 
